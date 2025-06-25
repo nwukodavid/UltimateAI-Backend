@@ -1,9 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { handleStripePayment, handlePaystackWebhook } = require('../controllers/paymentController');
-const { protect } = require('../middleware/authMiddleware');
+const {
+  handlePaystackPayment,
+  handlePaystackWebhook,
+} = require("../controllers/paymentController");
 
-router.post('/stripe', protect, handleStripePayment);
-router.post('/paystack-webhook', handlePaystackWebhook);
+router.post("/initialize", handlePaystackPayment);
+router.post("/webhook", handlePaystackWebhook);
 
 module.exports = router;
