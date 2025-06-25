@@ -1,36 +1,47 @@
-const stripe = require('../config/stripe');
+// controllers/paymentController.js
+const axios = require("axios");
 
-const handleStripePayment = async (req, res) => {
-  const { email } = req.body;
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+const CLIENT_URL = process.env.CLIENT_URL;
+
+const headers = {
+  Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+  "Content-Type": "application/json",
+};
+
+// ✅ Handle Paystack Payment Initialization
+const handlePaystackPayment = async (req, res) => {
+  const { email, amount } = req.body;
 
   try {
-    const customer = await stripe.customers.create({ email });
-    const session = await stripe.checkout.sessions.create({
-      customer: customer.id,
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: { name: 'UltimateAI Pro Plan' },
-            unit_amount: 1000,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/success`,
-      cancel_url: `${process.env.CLIENT_URL}/cancel`,
-    });
+    const response = await axios.post(
+      "https://api.paystack.co/transaction/initialize",
+      {
+        email,
+        amount: amount * 100, // Paystack uses kobo (₦1 = 100 kobo)
+        callback_url: `${CLIENT_URL}/success`,
+      },
+      { headers }
+    );
 
-    res.json({ url: session.url });
+    res.status(200).json({
+      url: response.data.data.authorization_url,
+      reference: response.data.data.reference,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: "Paystack payment initialization failed",
+      details: err.response?.data || err.message,
+    });
   }
 };
 
+// ✅ Mock Webhook (you can later verify signature here)
 const handlePaystackWebhook = (req, res) => {
-  res.json({ message: 'Webhook received (mock)' });
+  res.status(200).json({ message: "Webhook received (mock)" });
 };
 
-module.exports = { handleStripePayment, handlePaystackWebhook };
+module.exports = {
+  handlePaystackPayment,
+  handlePaystackWebhook,
+};
