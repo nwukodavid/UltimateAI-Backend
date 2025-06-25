@@ -5,5 +5,5 @@ const { registerUser } = require("../controllers/userController");
 // ✅ Register route (Update this line)
 router.post("/register", registerUser);
 
-module.exports = router;o
+module.exports = router;
 
