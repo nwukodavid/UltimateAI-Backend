@@ -5,7 +5,7 @@ const protect = async (req, res, next) => {
   let token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ error: 'Not authorized, no token' });
+    return res.status(401).json({ error: 'Not authorized, token missing' });
   }
 
   try {
@@ -14,7 +14,7 @@ const protect = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    res.status(401).json({ error: 'Not authorized, token failed' });
+    res.status(401).json({ error: 'Not authorized, token invalid' });
   }
 };
 
