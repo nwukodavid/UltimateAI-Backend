@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 const User = require('../../models/User');
 const { protect } = require('../../middleware/auth');
-x
+
 // Prices in kobo (₦)
 const prices = {
   Ultimateplus: 500 * 100,   // ₦500 = $5
