@@ -6,15 +6,14 @@ const { protect } = require('../../middleware/auth');
 
 // Prices in Kobo (₦)
 const prices = {
-  Ultimateplus: 500 * 100, // ₦500 = $5
-  Ultimatepro: 2000 * 100  // ₦2000 = $20
+  Ultimateplus: 500 * 100,  // ₦500 = $5
+  Ultimatepro: 2000 * 100   // ₦2000 = $20
 };
 
-// Payment route
+// POST /api/payments/initiate
 router.post('/initiate', protect, async (req, res) => {
   const { plan } = req.body;
   const amount = prices[plan];
-
   if (!amount) {
     return res.status(400).json({ error: 'Invalid plan selected' });
   }
@@ -36,6 +35,7 @@ router.post('/initiate', protect, async (req, res) => {
       }
     );
 
+    // return only the payment URL
     res.json({ url: response.data.data.authorization_url });
   } catch (err) {
     console.error('Paystack error:', err.response?.data || err.message);
