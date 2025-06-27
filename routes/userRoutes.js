@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../routes/auth'); // adjust if path is different
+const { protect } = require('../middleware/authMiddleware'); // ✅ Correct path
+
 const {
   getUserProfile,
   updateUserPlan,
