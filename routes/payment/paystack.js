@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const { protect } = require('../../middleware/auth'); // ✅ Ensure this path is correct
 
-router.post('/create', async (req, res) => {
+// POST /api/payments/create
+router.post('/create', protect, async (req, res) => {
   const { email, amount, planName } = req.body;
 
   try {
@@ -12,7 +14,8 @@ router.post('/create', async (req, res) => {
         email,
         amount,
         metadata: {
-          plan: planName || 'Unknown'
+          plan: planName || 'Unknown',
+          userId: req.user?._id || 'guest',
         }
       },
       {
